@@ -4,8 +4,6 @@ using System.Collections;
 public class Enemy : MovingObjects {
 
 	public int playerDamage;
-	public AudioClip attackSound1;
-	public AudioClip attackSound2;
 
 	private Animator animator;
 	private Transform target;
@@ -49,6 +47,6 @@ public class Enemy : MovingObjects {
 
 		animator.SetTrigger("enemyAttack");
 
-		SoundManager.instance.RandomizeSfx(attackSound1, attackSound2);
+		SoundManager.instance.PlaySound (SoundManager.GameAudioEvent.EnemyAttack);
 	}
 }

@@ -3,8 +3,6 @@ using System.Collections;
 
 public class InnerWall : MonoBehaviour {
 
-	public AudioClip chopSound1;
-	public AudioClip chopSound2;
 	public Sprite dmgSprite;
 	public int hp = 4;
 
@@ -15,7 +13,7 @@ public class InnerWall : MonoBehaviour {
 	}
 
 	public void DamageWall (int loss) {
-		SoundManager.instance.RandomizeSfx(chopSound1, chopSound2);
+		SoundManager.instance.PlaySound (SoundManager.GameAudioEvent.PlayerAttack);
 		spriteRenderer.sprite = dmgSprite;
 		hp -= loss;
 		if (hp <= 0) {

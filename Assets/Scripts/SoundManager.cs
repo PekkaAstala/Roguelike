@@ -3,6 +3,17 @@ using System.Collections;
 
 public class SoundManager : MonoBehaviour {
 
+	public enum GameAudioEvent {
+		Eat, Drink, Walk, EnemyAttack, PlayerAttack, GameOver
+	}
+
+	public AudioClip[] eatSounds;
+	public AudioClip[] drinkSounds;
+	public AudioClip[] walkSounds;
+	public AudioClip[] enemyAttackSounds;
+	public AudioClip[] playerAttackSounds;
+	public AudioClip[] gameOverSounds;
+
 	public AudioSource efxSource;
 	public AudioSource musicSource;
 	public static SoundManager instance = null;
@@ -17,7 +28,42 @@ public class SoundManager : MonoBehaviour {
 			Destroy(gameObject);
 		}
 		DontDestroyOnLoad(gameObject);
-	
+	}
+
+	public void PlaySound(GameAudioEvent eventType) {
+		switch (eventType) 
+		{
+			case GameAudioEvent.Eat:
+			{
+				RandomizeSfx (eatSounds);
+				return;
+			}
+			case GameAudioEvent.Drink:
+			{
+				RandomizeSfx (drinkSounds);
+				return;
+			}
+			case GameAudioEvent.Walk:
+			{
+				RandomizeSfx (walkSounds);
+				return;
+			}
+			case GameAudioEvent.EnemyAttack:
+			{
+				RandomizeSfx (enemyAttackSounds);
+				return;
+			}
+			case GameAudioEvent.PlayerAttack:
+			{
+				RandomizeSfx (playerAttackSounds);
+				return;
+			}
+			case GameAudioEvent.GameOver:
+			{
+				RandomizeSfx (gameOverSounds);
+				return;
+			}
+		}
 	}
 	
 	public void PlaySingle(AudioClip clip) {
@@ -25,7 +71,7 @@ public class SoundManager : MonoBehaviour {
 		efxSource.Play();
 	}
 
-	public void RandomizeSfx (params AudioClip [] clips) {
+	private void RandomizeSfx (params AudioClip [] clips) {
 		int randomIndex = Random.Range(0, clips.Length);
 		float randomPitch = Random.Range(lowPitchRange, highPitchRange);
 
