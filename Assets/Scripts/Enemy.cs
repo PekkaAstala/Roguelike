@@ -17,14 +17,12 @@ public class Enemy : MovingObjects {
 	}
 
 	protected override void AttemptMove<T> (int xDir, int yDir) {
+		skipMove = !skipMove;
 		if (skipMove) {
-			skipMove = false;
 			return;
 		}
 
 		base.AttemptMove<T> (xDir, yDir);
-
-		skipMove = true;
 	}
 
 	public void MoveEnemy() {
@@ -40,7 +38,7 @@ public class Enemy : MovingObjects {
 		AttemptMove<Player> (xDir, yDir);
 	}
 
-	protected override void OnCantMove<T> (T component) {
+	protected override void HitObstacle<T> (T component) {
 		Player hitPlayer = component as Player;
 
 		hitPlayer.LoseFood(playerDamage);

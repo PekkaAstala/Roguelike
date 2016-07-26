@@ -19,7 +19,7 @@ public class Player : MovingObjects {
 
 		food = GameManager.instance.playerFoodPoints;
 
-		foodText.text = "Food: " + food;
+		UpdateFoodText ();
 
 		base.Start();
 	}
@@ -52,18 +52,18 @@ public class Player : MovingObjects {
 			enabled = false;
 		} else if (other.tag == "Food") {
 			food += pointsPerFood;
-			foodText.text = "+" + pointsPerFood + " Food: " + food;
+			UpdateFoodText (pointsPerFood);
 			SoundManager.instance.PlaySound (SoundManager.GameAudioEvent.Eat);
 			other.gameObject.SetActive(false);
 		} else if (other.tag == "Soda") {
 			food += pointsPerSoda;
-			foodText.text = "+" + pointsPerSoda + " Food: " + food;
+			UpdateFoodText (pointsPerSoda);
 			SoundManager.instance.PlaySound (SoundManager.GameAudioEvent.Drink);
 			other.gameObject.SetActive(false);
 		} 
 	}
 
-	protected override void OnCantMove<T> (T component) {
+	protected override void HitObstacle<T> (T component) {
 		InnerWall hitWall = component as InnerWall;
 		hitWall.DamageWall(wallDamage);
 		animator.SetTrigger("playerChop");
@@ -76,18 +76,18 @@ public class Player : MovingObjects {
 	public void LoseFood(int loss) {
 		animator.SetTrigger("playerHit");
 		food -= loss;
-		foodText.text = "-" + loss + " Food: " + food;
+		UpdateFoodText (-loss);
 		CheckIfGameOver();
 	}
 
 	protected override void AttemptMove<T> (int xDir, int yDir) {
 		food--;
-		foodText.text = "Food: " + food;
+		UpdateFoodText ();
 
 		base.AttemptMove<T> (xDir, yDir);
 
-		RaycastHit2D hit;
-		if (Move (xDir, yDir, out hit)) {
+		Transform obstacles = Move (xDir, yDir);
+		if (obstacles == null) {
 			SoundManager.instance.PlaySound (SoundManager.GameAudioEvent.Walk);
 		}
 
@@ -102,6 +102,14 @@ public class Player : MovingObjects {
 			SoundManager.instance.musicSource.Stop();
 			GameManager.instance.GameOver();
 		}
+	}
+
+	private void UpdateFoodText () {
+		foodText.text = "Food: " + food;
+	}
+
+	private void UpdateFoodText(int change) {
+		foodText.text = "Food: " + food + " (" + (change >= 0 ? "+" : "") + change + ")";
 	}
 
 }

@@ -14,23 +14,37 @@ public abstract class MovingObjects : MonoBehaviour {
 		rigidBody = GetComponent<Rigidbody2D>();
 	}
 
-	protected bool Move (int xDir, int yDir, out RaycastHit2D hit) {
+	protected Transform Move (int xDir, int yDir) {
 		Vector2 start = transform.position;
 		Vector2 end = start + new Vector2(xDir, yDir);
 
 		boxCollider.enabled = false;
-		hit = Physics2D.Linecast(start, end, blockingLayer);
+		RaycastHit2D hit = Physics2D.Linecast(start, end, blockingLayer);
 		boxCollider.enabled = true;
 
 		if (hit.transform == null) {
 			StartCoroutine(SmoothMovement (end));
-			return true;
 		}
 
-		return false;
+		return hit.transform;
 	}
 
-	protected IEnumerator SmoothMovement(Vector3 end) {
+	protected virtual void AttemptMove <T> (int xDir, int yDir) where T : Component {
+		Transform obstaclesInWay = Move (xDir, yDir);
+
+		if (obstaclesInWay == null) {
+			return;
+		}
+
+		T hitComponent = obstaclesInWay.GetComponent<T>();
+		if (hitComponent != null) {
+			HitObstacle(hitComponent);
+		}
+	}
+
+	protected abstract void HitObstacle <T> (T component) where T : Component;
+
+	private IEnumerator SmoothMovement(Vector3 end) {
 		float sqrRemainingDistance = (transform.position - end).sqrMagnitude;
 
 		while (sqrRemainingDistance > float.Epsilon) {
@@ -40,23 +54,4 @@ public abstract class MovingObjects : MonoBehaviour {
 			yield return null;
 		}
 	}
-
-	protected virtual void AttemptMove <T> (int xDir, int yDir)
-		where T : Component {
-		RaycastHit2D hit;
-		bool canMove = Move (xDir, yDir, out hit);
-
-		if (hit.transform == null) {
-			return;
-		}
-
-		T hitComponent = hit.transform.GetComponent<T>();
-
-		if (!canMove && hitComponent != null) {
-			OnCantMove(hitComponent);
-		}
-	}
-
-	protected abstract void OnCantMove <T> (T component)
-		where T : Component;
 }
