@@ -18,13 +18,8 @@ public class BoardManager : MonoBehaviour {
 
 	public void SetupScene(int level) {
 		boardHolder = new GameObject("Board").transform;
-		SetupFloorAndOuterWalls();
-		GameObject[] innerWalls = PickRandomly (innerWallTiles, Random.Range (5, 9));
-		GameObject[] foods = PickRandomly (foodTiles, Random.Range (1, 5));
-		GameObject[] enemies = PickRandomly (enemyTiles, (int)Mathf.Log (level, 2f));
-		GameObject[] levelContents = MergeArrays (innerWalls, foods, enemies);
-		List<Vector3> availablePositions = GetPositionsForRandomlyPlacedItems ();
-		LayoutObjectsAtRandom(availablePositions, levelContents);
+		SetupFloorAndOuterWalls ();
+		SetupLevelContents (level);
 		Instantiate(exit, new Vector3(columns-1, rows-1, 0f), Quaternion.identity);
 	}
 
@@ -41,6 +36,15 @@ public class BoardManager : MonoBehaviour {
 				instance.transform.SetParent(boardHolder);
 			}
 		}
+	}
+
+	private void SetupLevelContents(int level) {
+		GameObject[] innerWalls = PickRandomly (innerWallTiles, Random.Range (5, 9));
+		GameObject[] foods = PickRandomly (foodTiles, Random.Range (1, 5));
+		GameObject[] enemies = PickRandomly (enemyTiles, (int)Mathf.Log (level, 2f));
+		GameObject[] levelContents = MergeArrays (innerWalls, foods, enemies);
+		List<Vector3> availablePositions = GetPositionsForRandomlyPlacedItems ();
+		LayoutObjectsAtRandom(availablePositions, levelContents);
 	}
 
 	private bool IsPartOfOuterWalls(int x, int y) {
